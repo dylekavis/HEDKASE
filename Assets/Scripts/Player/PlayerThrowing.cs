@@ -77,10 +77,14 @@ public class PlayerThrowing : MonoBehaviour
         Vector2 spawnOffset = aimDirection.normalized * 0.8f;
         Vector2 spawnPos = (Vector2)transform.position + spawnOffset;
 
-        GameObject thrown = Instantiate(objectToThrow, spawnPos, Quaternion.identity);
-        Rigidbody2D thrownRb = thrown.GetComponent<Rigidbody2D>();
+        headObject.transform.parent = null;
 
-        thrownRb.AddForce(aimDirection * finalForce, ForceMode2D.Impulse);
+        Rigidbody2D headRb = headObject.GetComponent<Rigidbody2D>();
+        headObject.transform.position = spawnPos;
+        
+        headObject.SetActive(true);
+        HeadRotation hr = headObject.GetComponent<HeadRotation>();
+        headRb.AddForce(aimDirection.normalized * finalForce, ForceMode2D.Impulse);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -88,6 +92,9 @@ public class PlayerThrowing : MonoBehaviour
         if (collision.gameObject.CompareTag("Head"))
         {
             headObject = collision.gameObject; //fix for object pooling
+            headObject.transform.SetParent(this.transform);
+            headObject.SetActive(false);
+            headObject.transform.position = this.transform.position;
             hasHead = true;
         }
     }

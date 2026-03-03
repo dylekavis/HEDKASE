@@ -1,4 +1,5 @@
 using System;
+using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,11 +15,14 @@ public class PlayerInputManager : MonoBehaviour
     public event Action OnThrow;
     public event Action<Vector2> OnThrowCancelled;
     public event Action<Vector2> OnPlayerLook;
+    public event Action OnLookCancelled;
 
     [SerializeField] Camera mainCam;
 
     Vector2 moveInput;
     Vector2 aimDirection;
+
+    bool isMoving;
 
     void Awake()
     {
@@ -32,17 +36,19 @@ public class PlayerInputManager : MonoBehaviour
     {
         if (ctx.performed)
         {
+            isMoving = true;
             moveInput = ctx.ReadValue<Vector2>();
             OnMove?.Invoke(moveInput);
         }
         else if (ctx.canceled)
         {
+            isMoving = false;
             moveInput = Vector2.zero;
             OnMoveCancelled?.Invoke();
         }
     }
 
-    public void HandleDash(InputAction.CallbackContext ctx)
+    public void HandleSprint(InputAction.CallbackContext ctx)
     {
         if (ctx.performed)
         {
@@ -62,14 +68,21 @@ public class PlayerInputManager : MonoBehaviour
 
     public void HandleLookDirection(InputAction.CallbackContext ctx)
     {
+        if (isMoving) return;
+
+        if (!ctx.performed) 
+        {
+            OnLookCancelled?.Invoke();
+            return;
+        }
+
         Vector2 lookDirection = ctx.ReadValue<Vector2>();
 
         if (ctx.control.device is Gamepad)
         {
-            if (lookDirection.magnitude > 0.01f)
+            if (lookDirection.magnitude > 0.2f)
             {
-                aimDirection = lookDirection.normalized;
-                OnPlayerLook?.Invoke(aimDirection);
+                OnPlayerLook?.Invoke(lookDirection);
             }
         }
         else

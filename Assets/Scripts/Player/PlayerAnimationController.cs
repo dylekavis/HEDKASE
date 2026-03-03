@@ -5,13 +5,14 @@ public class PlayerAnimationController : MonoBehaviour
     [SerializeField] Animator anim;
     [SerializeField] Camera mainCam;
 
-    bool isWalking;
+    bool isWalking = false;
 
     void OnEnable()
     {
         PlayerInputManager.Instance.OnMove += HandleMovement;
         PlayerInputManager.Instance.OnMoveCancelled += CancelMovement;
         PlayerInputManager.Instance.OnPlayerLook += HandleLook;
+        PlayerInputManager.Instance.OnLookCancelled += CancelLook;
     }
 
     void OnDisable()
@@ -41,15 +42,15 @@ public class PlayerAnimationController : MonoBehaviour
 
     public void HandleLook(Vector2 lookDir)
     {
-        if (isWalking)
-        {
-            anim.SetFloat("AnimMoveX", lookDir.x);
-            anim.SetFloat("AnimMoveY", lookDir.y);
-        }
-        else
-        {
-            anim.SetFloat("IdleX", lookDir.x);
-            anim.SetFloat("IdleY", lookDir.y);
-        }
+        anim.SetFloat("IdleX", lookDir.x);
+        anim.SetFloat("IdleY", lookDir.y);
+        anim.SetFloat("LastLookX", lookDir.x);
+        anim.SetFloat("LastLookY", lookDir.y);
+    }
+
+    public void CancelLook()
+    {
+        anim.SetFloat("IdleX", anim.GetFloat("LastLookX"));
+        anim.SetFloat("IdleY", anim.GetFloat("LastLookY"));
     }
 } 
