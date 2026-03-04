@@ -20,7 +20,7 @@ public class PlayerInputManager : MonoBehaviour
     [SerializeField] Camera mainCam;
 
     Vector2 moveInput;
-    Vector2 aimDirection;
+    [SerializeField] Vector2 aimDirection;
 
     bool isMoving;
 
@@ -70,11 +70,13 @@ public class PlayerInputManager : MonoBehaviour
     {
         if (isMoving) return;
 
-        if (!ctx.performed) 
+        if (ctx.canceled) 
         {
             OnLookCancelled?.Invoke();
             return;
         }
+
+        if (!ctx.performed) return;
 
         Vector2 lookDirection = ctx.ReadValue<Vector2>();
 
@@ -88,10 +90,8 @@ public class PlayerInputManager : MonoBehaviour
         else
         {
             Vector3 mouseScreenPos = lookDirection;
-            mouseScreenPos.z = Mathf.Abs(mainCam.transform.position.z);
-
             Vector3 mouseWorldPos = mainCam.ScreenToWorldPoint(mouseScreenPos);
-            Vector2 direction = mouseWorldPos - transform.position;
+            Vector2 direction = (mouseWorldPos - transform.position).normalized;
 
             aimDirection = direction.normalized;
             OnPlayerLook?.Invoke(aimDirection);

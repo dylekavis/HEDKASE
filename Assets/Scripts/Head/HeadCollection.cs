@@ -1,13 +1,16 @@
+using System;
 using UnityEngine;
 
 public class HeadCollection : MonoBehaviour
 {
+    public event Action<GameObject> OnHeadCollect;
+
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Throwable"))
         {
-            gameObject.SetActive(false);
-            gameObject.transform.SetParent(collision.gameObject.transform);
+            Debug.Log($"head collided with {collision.gameObject.name}");
+            OnHeadCollect?.Invoke(collision.gameObject);
         }
     }
 }

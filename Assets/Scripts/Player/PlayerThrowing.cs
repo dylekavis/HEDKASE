@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
-using Unity.Mathematics;
 using UnityEngine;
 
+[RequireComponent(typeof(PlayerAnimationController))]
 public class PlayerThrowing : MonoBehaviour
 {
+    public event Action OnHeadLoss;
+
     [SerializeField] GameObject headObject;
     [SerializeField] GameObject otherObject;
     [SerializeField] float maxChargeTime = 3f;
@@ -11,9 +14,20 @@ public class PlayerThrowing : MonoBehaviour
     
     float currentCharge;
 
-    bool hasHead = true;
+    [SerializeField] bool hasHead = true;
 
     Coroutine throwCharge;
+
+    void Start()
+    {
+        if (headObject != null)
+        {
+            HeadCollection hc = headObject.GetComponent<HeadCollection>();
+
+            if (hc != null)
+                hc.OnHeadCollect += CollectObject;
+        }
+    }
 
     void OnEnable()
     {
@@ -61,12 +75,12 @@ public class PlayerThrowing : MonoBehaviour
     {
         GameObject objectToThrow = null;
 
-        if (hasHead)
+        if (hasHead && otherObject == null)
         {
             objectToThrow = headObject;
             hasHead = false;
         }
-        else if (otherObject != null)
+        else if (otherObject != null && hasHead)
         {
             objectToThrow = otherObject;
         }
@@ -77,25 +91,51 @@ public class PlayerThrowing : MonoBehaviour
         Vector2 spawnOffset = aimDirection.normalized * 0.8f;
         Vector2 spawnPos = (Vector2)transform.position + spawnOffset;
 
-        headObject.transform.parent = null;
+        objectToThrow.transform.parent = null;
 
-        Rigidbody2D headRb = headObject.GetComponent<Rigidbody2D>();
-        headObject.transform.position = spawnPos;
+        Rigidbody2D objRb = objectToThrow.GetComponent<Rigidbody2D>();
+        objectToThrow.transform.position = spawnPos;
         
-        headObject.SetActive(true);
-        HeadRotation hr = headObject.GetComponent<HeadRotation>();
-        headRb.AddForce(aimDirection.normalized * finalForce, ForceMode2D.Impulse);
+        objectToThrow.SetActive(true);
+
+        objRb.AddForce(aimDirection.normalized * finalForce, ForceMode2D.Impulse);
+        
+        if (objectToThrow == otherObject)
+        {
+            otherObject = null;
+        }
+    }
+
+    void CollectObject(GameObject objectToCollect)
+    {
+        if (otherObject == null)
+        {
+            otherObject = objectToCollect;
+
+            otherObject.SetActive(false);
+            otherObject.transform.SetParent(transform);
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Head"))
         {
-            headObject = collision.gameObject; //fix for object pooling
+            headObject = collision.gameObject;
             headObject.transform.SetParent(this.transform);
             headObject.SetActive(false);
             headObject.transform.position = this.transform.position;
             hasHead = true;
+
+            if (headObject != null)
+            {
+                HeadCollection hc = headObject.GetComponent<HeadCollection>();
+                
+                if (hc != null)
+                    hc.OnHeadCollect += CollectObject;
+            }
         }
     }
+
+    public bool HasHead() => hasHead;
 }
