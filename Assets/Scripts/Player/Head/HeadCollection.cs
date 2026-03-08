@@ -1,9 +1,22 @@
 using System;
 using UnityEngine;
 
-public class HeadCollection : MonoBehaviour
+public class HeadCollection : MonoBehaviour, IThrowable
 {
     public event Action<GameObject> OnHeadCollect;
+
+    IThrowable throwable;
+    IThrowable.State state;
+
+    public IThrowable.State GetState()
+    {
+        return state;
+    }
+
+    public void SetState(IThrowable.State state)
+    {
+        this.state = state;
+    }
 
     void OnCollisionEnter2D(Collision2D collision)
     {

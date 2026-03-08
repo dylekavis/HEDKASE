@@ -1,120 +1,85 @@
 using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering.UI;
 
 [RequireComponent(typeof(EyelerAIController))]
-
 public class EyelerMovement : MonoBehaviour
 {
+    [Header("Internal References")]
     [SerializeField] EyelerAIController eyelerAI;
-
 
     [Header("Movement Parameters")]
     [SerializeField] float moveSpeed = 10f;
-    [SerializeField] float minAttackDistance = 1.5f;
+    float minAttackDistance => eyelerAI.MinAttackDistance;
 
     [Header("Idle Parameters")]
     [SerializeField] float yOscillationSpeed = 2f;
     [SerializeField, Range(0, 1)] float yOscillationHeight;
 
-    [Header("Attack Parameters")]
-    [SerializeField] float preAttackTime = 0.4f;
-    [SerializeField] float xOscillationSpeed = 10f;
-    [SerializeField, Range(0, 1)] float xOscillationWidth;
+    EyelerState previousState;
+    Rigidbody2D rb;
+    Transform targetTransform;
 
-    float startY;
-    float startX;
     float idleTimer;
+    float startY;
 
     bool hasTarget;
 
-    Vector2 targetVector;
-
-    Rigidbody2D rb;
-
-    Coroutine attackMovementRoutine;
-
+   
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         eyelerAI = GetComponent<EyelerAIController>();
-
         startY = transform.position.y;
-        startX = transform.position.x;
     }
 
-    void OnEnable()
+    void FixedUpdate()
     {
-        eyelerAI.OnChaseStart += SetTargetToChase;
-        eyelerAI.OnChaseEnd += StopUpdatingTarget;
-        eyelerAI.OnAttackStart += StartAttackMovement;
-    }
+        EyelerState currentState = eyelerAI.GetEyelerState;
 
-    void OnDisable()
-    {
-        eyelerAI.OnChaseStart -= SetTargetToChase;
-        eyelerAI.OnChaseEnd -= StopUpdatingTarget;
-        eyelerAI.OnAttackStart -= StartAttackMovement;
-    }
+        if (currentState != previousState)
+        {
+            OnStateChanged(currentState);
+            previousState = currentState;
+        }
 
-    void Update()
-    {
         if (eyelerAI.GetEyelerState == EyelerState.Attacking)
         {
-            rb.linearVelocity = Vector2.zero;
-            return;
+            Attack();
         }
-
-        if (eyelerAI.GetEyelerState == EyelerState.Idle)
+        else if (eyelerAI.GetEyelerState == EyelerState.Idle)
         {
             IdleMovement();
-            return;
         }
-        
-        if (hasTarget)
+        else if (eyelerAI.GetEyelerState == EyelerState.Chasing)
         {
-            ChaseTargetPosition();
+            Chase();
         }
     }
 
-    void ChaseTargetPosition()
+    void OnStateChanged(EyelerState state)
     {
-        if (eyelerAI.GetEyelerState != EyelerState.Chasing) return;
-        if (eyelerAI.GetEyelerState == EyelerState.Attacking) return;
-        
-        float distance = Vector2.Distance(transform.position, targetVector);
-
-        if (distance > minAttackDistance)
+        if (state == EyelerState.Idle)
         {
-            Vector2 movePos = Vector2.MoveTowards(
-                rb.position,
-                targetVector,
-                moveSpeed * Time.fixedDeltaTime
-            );
-
-            rb.MovePosition(movePos);
-        }
-        else
-        {
-            rb.linearVelocity = Vector2.zero;
-            hasTarget = false;
-            return;
+            startY = transform.position.y;
+            idleTimer = 0f;
         }
     }
 
-    void SetTargetToChase(Vector2 targetToChase)
+    void Attack()
     {
-        Debug.Log("target set");
-        targetVector = targetToChase;
-        hasTarget = true;
+        rb.linearVelocity = Vector2.zero;
     }
 
-    void StopUpdatingTarget()
+    void Chase()
     {
-        hasTarget = false;
-        ReturnToIdle();
+        Vector2 movePos = Vector2.MoveTowards(
+            rb.position,
+            eyelerAI.Target.position,
+            moveSpeed * Time.fixedDeltaTime
+        );
+            
+        rb.MovePosition(movePos);
     }
 
     void IdleMovement()
@@ -123,18 +88,8 @@ public class EyelerMovement : MonoBehaviour
 
         float sin = Mathf.Sin(yOscillationSpeed * idleTimer) * yOscillationHeight;
 
-        transform.position = new Vector2(transform.position.x, startY + sin);
-    }
+        Vector3 idleMove = new Vector3(transform.position.x, startY + sin);
 
-    void ReturnToIdle()
-    {
-        idleTimer = 0;
-        startY = transform.position.y;
-        startX = transform.position.x;
-    }
-
-    void StartAttackMovement()
-    {
-        hasTarget = false;
+        rb.MovePosition(idleMove);
     }
 }

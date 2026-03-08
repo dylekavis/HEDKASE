@@ -86,6 +86,10 @@ public class PlayerThrowing : MonoBehaviour
         }
         else return;
 
+        IThrowable throwable = objectToThrow.GetComponent<IThrowable>();
+
+        if (throwable == null) return;
+
         float chargePercent = currentCharge / maxChargeTime;
         float finalForce = chargePercent * throwForce;
         Vector2 spawnOffset = aimDirection.normalized * 0.8f;
@@ -97,6 +101,7 @@ public class PlayerThrowing : MonoBehaviour
         objectToThrow.transform.position = spawnPos;
         
         objectToThrow.SetActive(true);
+        throwable.SetState(IThrowable.State.Thrown);
 
         objRb.AddForce(aimDirection.normalized * finalForce, ForceMode2D.Impulse);
         

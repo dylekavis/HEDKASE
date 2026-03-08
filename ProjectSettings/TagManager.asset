@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Head
   - Throwable
+  - Enemy
   layers:
   - Default
   - TransparentFX

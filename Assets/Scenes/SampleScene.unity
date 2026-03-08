@@ -1038,6 +1038,7 @@ GameObject:
   - component: {fileID: 748778913}
   - component: {fileID: 748778912}
   - component: {fileID: 748778916}
+  - component: {fileID: 748778918}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1176,6 +1177,20 @@ CapsuleCollider2D:
   m_Offset: {x: 0.009827569, y: -0.17034471}
   m_Size: {x: 0.38862076, y: 0.5937934}
   m_Direction: 0
+--- !u!114 &748778918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748778911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eed58156d517474ca7bd6ad0491b9de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealthAmount: 50
+  currentHealth: 0
 --- !u!1 &949453417
 GameObject:
   m_ObjectHideFlags: 0
@@ -1188,6 +1203,7 @@ GameObject:
   - component: {fileID: 949453420}
   - component: {fileID: 949453419}
   - component: {fileID: 949453418}
+  - component: {fileID: 949453422}
   m_Layer: 0
   m_Name: testThrowable
   m_TagString: Throwable
@@ -1328,6 +1344,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &949453422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949453417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6245b536c0080dc41a9d5489b3cef55c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 0
 --- !u!1 &1146432643
 GameObject:
   m_ObjectHideFlags: 0
@@ -1373,8 +1402,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1156651955}
   - component: {fileID: 1156651956}
+  - component: {fileID: 1156651957}
   m_Layer: 0
-  m_Name: AttackCollider
+  m_Name: Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1431,6 +1461,19 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: -0.08438325}
   m_Radius: 1.5
+--- !u!114 &1156651957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1156651954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66a6048efb7b1114fb8407d8a87258e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 10
 --- !u!1 &1252533964
 GameObject:
   m_ObjectHideFlags: 0
@@ -1443,6 +1486,7 @@ GameObject:
   - component: {fileID: 1252533967}
   - component: {fileID: 1252533966}
   - component: {fileID: 1252533965}
+  - component: {fileID: 1252533969}
   m_Layer: 0
   m_Name: testThrowable (1)
   m_TagString: Throwable
@@ -1583,6 +1627,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1252533969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252533964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6245b536c0080dc41a9d5489b3cef55c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 0
 --- !u!1 &1268262444
 GameObject:
   m_ObjectHideFlags: 0
@@ -1896,6 +1953,7 @@ GameObject:
   - component: {fileID: 1852380373}
   - component: {fileID: 1852380372}
   - component: {fileID: 1852380371}
+  - component: {fileID: 1852380375}
   m_Layer: 0
   m_Name: testThrowable (2)
   m_TagString: Throwable
@@ -2036,6 +2094,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1852380375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1852380370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6245b536c0080dc41a9d5489b3cef55c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 0
 --- !u!1 &1978549177
 GameObject:
   m_ObjectHideFlags: 0
@@ -2050,9 +2121,11 @@ GameObject:
   - component: {fileID: 1978549186}
   - component: {fileID: 1978549185}
   - component: {fileID: 1978549184}
+  - component: {fileID: 1978549188}
+  - component: {fileID: 1978549187}
   m_Layer: 0
   m_Name: Eyeler
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2152,12 +2225,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eyelerAI: {fileID: 1978549186}
   moveSpeed: 5
-  minAttackDistance: 1.5
   yOscillationSpeed: 2
   yOscillationHeight: 0.41
-  preAttackTime: 0.4
-  xOscillationSpeed: 1.5
-  xOscillationWidth: 0.507
 --- !u!114 &1978549185
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2187,8 +2256,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   detectionRadius: {fileID: 1299186381}
-  minDistanceToAttack: 2
-  attackCooldownTime: 1.5
+  detectionResetTime: 2
+  minDistanceToAttemptAttack: 1.25
+  attackAttemptTime: 0.12
+  attackCooldownTime: 0.3
+--- !u!114 &1978549187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1978549177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22c8432809bb98c41a277a0b126993d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitbox: {fileID: 1156651956}
+  eyelerAI: {fileID: 1978549186}
+--- !u!114 &1978549188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1978549177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eed58156d517474ca7bd6ad0491b9de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealthAmount: 50
+  currentHealth: 0
 --- !u!1 &2112467693
 GameObject:
   m_ObjectHideFlags: 0

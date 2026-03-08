@@ -25,7 +25,8 @@ public class EyelerAnimationController : MonoBehaviour
         eyelerAI.OnChaseStart += HandleMove;
         eyelerAI.OnChaseEnd += CancelMove;
 
-        eyelerAI.OnAttackStart += HandleAttack;
+        eyelerAI.OnAttackAttempt += AttemptAttack;
+        eyelerAI.OnAttackLand += HandleAttack;
         eyelerAI.OnAttackEnd += CancelAttack;    
     }
 
@@ -34,7 +35,8 @@ public class EyelerAnimationController : MonoBehaviour
         eyelerAI.OnChaseStart -= HandleMove;
         eyelerAI.OnChaseEnd -= CancelMove;
 
-        eyelerAI.OnAttackStart -= HandleAttack;
+        eyelerAI.OnAttackAttempt -= AttemptAttack;
+        eyelerAI.OnAttackLand += HandleAttack;
         eyelerAI.OnAttackEnd -= CancelAttack;  
     }
 
@@ -63,15 +65,22 @@ public class EyelerAnimationController : MonoBehaviour
         state = AnimationState.Idle;
 
         anim.SetBool("isWalking", false);
-        anim.SetBool("isAttacking", false);
+        anim.SetBool("canAttack", false);
+        anim.SetBool("canAttemptAttack", false);
     }
 
-    void HandleAttack()
+    void AttemptAttack()
     {
         state = AnimationState.Attacking;
         
         anim.SetBool("isWalking", false);
-        anim.SetBool("isAttacking", true);
+        anim.SetBool("canAttemptAttack", true);
+    }
+
+    void HandleAttack()
+    {
+        anim.SetBool("canAttemptAttack", false);
+        anim.SetBool("canAttack", true);
     }
 
     void CancelAttack()
