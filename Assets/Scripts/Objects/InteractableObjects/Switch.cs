@@ -1,5 +1,4 @@
 using System.Collections;
-using NUnit.Framework;
 using UnityEngine;
 
 public class Switch : MonoBehaviour
@@ -9,7 +8,7 @@ public class Switch : MonoBehaviour
     [SerializeField] float timeToDeactivate = 120f;
 
     [Header("Connections")]
-    [SerializeField] Switch connectedSwitch;
+    [SerializeField] Switch[] connectedSwitches;
     [SerializeField] GameObject connectedObjectToSwitch;
 
     [Header("References")]
@@ -28,14 +27,10 @@ public class Switch : MonoBehaviour
         if (collision.gameObject.CompareTag("Player")) return;
         if (collision.gameObject.CompareTag("Enemy")) return;
 
-        if (connectedSwitch == null)
-        {
+        if (connectedSwitches == null || connectedSwitches.Length == 0)
             TriggerSingleState();
-        }
         else
-        {
             TriggerMultipleState();
-        }
     }
 
     void TriggerSingleState()
@@ -45,10 +40,25 @@ public class Switch : MonoBehaviour
 
     void TriggerMultipleState()
     {
-        if (connectedSwitch.GetSentryState())
+        int connectedCount = 0;
+
+        for(int i = 0; i < connectedSwitches.Length; i++)
+        {
+            if (connectedSwitches[i] != null && connectedSwitches[i].GetSentryState())
+            {
+                connectedCount++;
+            }
+        }
+
+        if (connectedCount == connectedSwitches.Length)
         {
             Activate();
-            connectedSwitch.Activate();
+
+            foreach (var connect in connectedSwitches)
+            {
+                if (connect != null)
+                    connect.Activate();
+            }
         }
         else
         {
