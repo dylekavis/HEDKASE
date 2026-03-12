@@ -1,11 +1,11 @@
+using System.Collections;
 using UnityEngine;
 
 public class Rock : MonoBehaviour, IThrowable
 {
     public int damageAmount;
-    IThrowable throwable;
 
-    IThrowable.State state;
+    [SerializeField] IThrowable.State state;
 
     Rigidbody2D rb;
 
@@ -16,14 +16,38 @@ public class Rock : MonoBehaviour, IThrowable
         SetState(IThrowable.State.Idle);
     }
 
-    void Update()
+    public void SetState(IThrowable.State state)
     {
-        if (rb.linearVelocity == Vector2.zero) SetState(IThrowable.State.Idle);
+        this.state = state;
+
+        switch (this.state)
+        {
+            case IThrowable.State.Idle:
+                rb.linearVelocity = Vector2.zero;
+                rb.bodyType = RigidbodyType2D.Static;
+                break;
+            case IThrowable.State.Thrown:
+                rb.bodyType = RigidbodyType2D.Dynamic;
+                StartCoroutine(CheckStopped());
+                break;
+        } 
+    }
+
+    IEnumerator CheckStopped()
+    {
+        yield return new WaitUntil(() => rb.IsSleeping());
+
+        SetState(IThrowable.State.Idle);
+    }
+
+    public IThrowable.State GetState()
+    {
+        return state;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (GetState() == IThrowable.State.Idle) return;
+        if (state == IThrowable.State.Idle) return;
 
         if (collision.gameObject.CompareTag("Enemy"))
         {
@@ -38,20 +62,15 @@ public class Rock : MonoBehaviour, IThrowable
             Debug.Log($"{collision.gameObject.name} took {damageAmount} damage. {hm.GetHealth()} remains");
 
             Vector2 dir = (collision.gameObject.transform.position - transform.position).normalized;
-            Rigidbody2D colRb = collision.gameObject.GetComponent<Rigidbody2D>();
+            
+            Rigidbody2D colRb = collision.rigidbody;
+            
             if (colRb == null) return;
 
             colRb.AddForce(dir * damageAmount, ForceMode2D.Impulse);
+
+            SetState(IThrowable.State.Idle);
         }
     }
 
-    public void SetState(IThrowable.State state)
-    {
-        this.state = state;
-    }
-
-    public IThrowable.State GetState()
-    {
-        return state;
-    }
 }
