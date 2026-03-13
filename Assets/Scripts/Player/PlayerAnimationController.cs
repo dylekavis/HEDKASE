@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerAnimationController : MonoBehaviour
@@ -6,15 +7,19 @@ public class PlayerAnimationController : MonoBehaviour
     [SerializeField] Animator headlessBodyAnim;
     [SerializeField] Camera mainCam;
 
+    [SerializeField] PlayerPitDetection pitDetection;
+
     bool isWalking = false;
 
     PlayerThrowing throwing;
+    
 
     bool hasHead => throwing.HasHead();
 
     void Awake()
     {
         throwing = GetComponent<PlayerThrowing>();
+        pitDetection = GetComponentInChildren<PlayerPitDetection>();
     }
 
     void OnEnable()
@@ -26,6 +31,8 @@ public class PlayerAnimationController : MonoBehaviour
 
         throwing.OnHeadLoss += HandleHeadLoss;
         throwing.OnHeadPickup += HandleHeadPickup;
+
+        pitDetection.OnPitDetected += HandlePit;
     }
 
     void OnDisable()
@@ -37,6 +44,8 @@ public class PlayerAnimationController : MonoBehaviour
 
         throwing.OnHeadLoss -= HandleHeadLoss;
         throwing.OnHeadPickup -= HandleHeadPickup;
+
+        pitDetection.OnPitDetected -= HandlePit;
     }
 
     void HandleHeadLoss()
@@ -118,5 +127,69 @@ public class PlayerAnimationController : MonoBehaviour
             headlessBodyAnim.SetFloat("LastLookY", headlessBodyAnim.GetFloat("IdleY"));
         }
 
+    }
+
+    public void HandlePit()
+    {
+        if (hasHead)
+        {
+            fullBodyAnim.SetBool("hasFallen", true);
+            StartCoroutine(RespawnRoutine());
+        }
+        else
+        {
+            headlessBodyAnim.SetBool("hasFallen", true);
+            StartCoroutine(RespawnRoutine());
+        }
+    }
+
+    IEnumerator RespawnRoutine()
+    {
+        yield return new WaitForSeconds(0.4f);
+
+        if (hasHead)
+        {
+            fullBodyAnim.gameObject.SetActive(false);
+
+            fullBodyAnim.SetBool("hasFallen", false);
+
+            int blinkAmount = 4;
+            int blinks = 0;
+
+            while (blinks < blinkAmount)
+            {
+                fullBodyAnim.gameObject.SetActive(true);
+                yield return new WaitForSeconds(0.1f);
+                fullBodyAnim.gameObject.SetActive(false);
+                yield return new WaitForSeconds(0.1f);
+                blinks++;
+            }
+
+            fullBodyAnim.gameObject.SetActive(true);
+
+            yield break;
+        }
+        else
+        {
+            headlessBodyAnim.gameObject.SetActive(false);
+
+            headlessBodyAnim.SetBool("hasFallen", false);
+
+            int blinkAmount = 4;
+            int blinks = 0;
+
+            while (blinks < blinkAmount)
+            {
+                headlessBodyAnim.gameObject.SetActive(true);
+                yield return new WaitForSeconds(0.1f);
+                headlessBodyAnim.gameObject.SetActive(false);
+                yield return new WaitForSeconds(0.1f);
+                blinks++;
+            }
+
+            headlessBodyAnim.gameObject.SetActive(true);
+
+            yield break;
+        }
     }
 } 

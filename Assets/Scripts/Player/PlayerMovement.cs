@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public enum PlayerMovementState
@@ -14,8 +15,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float moveSpeed;
     [SerializeField] float sprintSpeedModifier;
 
+    PlayerPitDetection pitDetection;
+
     Vector2 moveInput;
     Vector2 forward;
+
+    void Awake()
+    {
+        pitDetection = GetComponentInChildren<PlayerPitDetection>();
+    }
 
     void FixedUpdate()
     {
@@ -30,6 +38,8 @@ public class PlayerMovement : MonoBehaviour
 
         PlayerInputManager.Instance.OnSprint += HandleSprint;
         PlayerInputManager.Instance.OnSprintCancelled += CancelSprint;
+
+        pitDetection.OnPitDetected += HandlePit;
     }
 
     void OnDisable()
@@ -39,6 +49,8 @@ public class PlayerMovement : MonoBehaviour
 
         PlayerInputManager.Instance.OnSprint -= HandleSprint;
         PlayerInputManager.Instance.OnSprintCancelled -= CancelSprint;
+
+        pitDetection.OnPitDetected -= HandlePit;
     }
 
     void UpdateMovementState()
@@ -92,6 +104,20 @@ public class PlayerMovement : MonoBehaviour
             state = PlayerMovementState.Idle;
         else
             state = PlayerMovementState.Walking;
+    }
+
+    void HandlePit()
+    {
+        transform.position += (Vector3)moveInput.normalized;
+
+        StartCoroutine(PitMovementDelay());
+    }
+
+    IEnumerator PitMovementDelay()
+    {
+        yield return new WaitForSeconds(0.4f);
+
+        CancelMovement();
     }
 
     public Vector2 GetMoveInput => moveInput;
